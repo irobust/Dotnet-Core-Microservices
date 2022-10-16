@@ -1,0 +1,28 @@
+pipeline{
+    agent{
+       dockerfile{
+           dir '05-Docker-and-Docker-compose/Weather.Api'
+           filename 'dotnetcore.dockerfile'
+       }
+    }
+    stages {
+        stage('Pre-Build'){
+            steps{
+                sh '''
+                    dotnet --list-sdks
+                    dotnet --list-runtimes
+                '''
+            }
+        }
+
+        stage('Build'){
+            environment {
+                DOTNET_CLI_HOME = "/tmp/DOTNET_CLI_HOME"
+            }
+            steps{
+                sh 'dotnet restore "${WORKSPACE}/M1-Docker-and-Docker-compose/Weather.Api/Weather.Api.csproj"'
+                sh 'dotnet build "${WORKSPACE}/M1-Docker-and-Docker-compose/Weather.Api/Weather.Api.csproj"'
+            }
+        }
+    }
+}

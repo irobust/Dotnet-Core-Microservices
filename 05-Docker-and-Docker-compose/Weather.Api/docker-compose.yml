@@ -1,0 +1,31 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+services:
+  weatherapi:
+    image: weatherapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:80
+
+  seq:
+    image: datalust/seq:latest
+    ports:
+        - "8081:80"
+        - "5341:5341"
+    environment:
+        - ACCEPT_EULA=Y
+
+  sql_server:
+    build:
+        context: .
+        dockerfile: sql.dockerfile
+    restart: always
+    ports:
+        - "1433:1433"
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=@dmIn1234

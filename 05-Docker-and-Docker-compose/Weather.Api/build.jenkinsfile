@@ -1,0 +1,33 @@
+def image
+pipeline{
+    agent any
+    stages {
+        stage('Build'){
+            steps{
+                script{
+                    // docker build -t irobust/weatherapi:jenkins -f dotnetcore.dockerfile M1-Docker-and-Docker-compose/Weather.Api/.
+                    image = docker.build("irobust/weatherapi:jenkins", "-f M1-Docker-and-Docker-compose/Weather.Api/dotnetcore.dockerfile M1-Docker-and-Docker-compose/Weather.Api/.")
+                }
+            }
+        }
+
+        stage('Run'){
+            steps{
+                script{
+                    container = image.run()
+                    container.stop()
+                }
+            }
+        }
+
+        stage('Push'){
+            steps{
+                script{
+                    withDockerRegistry([credentialsId: "docker-hub-2", url: ""]){
+                        image.push()
+                    }
+                }
+            }
+        }
+    }
+}
