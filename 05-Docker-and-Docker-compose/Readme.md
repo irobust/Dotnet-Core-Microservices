@@ -3,6 +3,8 @@
 1. Create new project
 ```
 dotnet new webapi -o Weather.Api
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.Seq
 ```
 2. Create launch.json and task.json
 * Click debugging tab and click `create a launch.json file`
