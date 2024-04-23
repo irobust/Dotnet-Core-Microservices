@@ -56,21 +56,21 @@
 
 > [Module 2 API Testing](02-API-Testing)
 
-### Caching with Redis
-> [Module 3 Caching with Redis](03-Redis-Server)
+### API Gateway
+> [Module 3 API Gateway](03-API-Gateway)
 
 ### Communication with RabbitMQ
 > [Module 4 Communication with RabbitMQ](04-Message-Queue)
 
+### Caching with Redis
+> [Module 5 Caching with Redis](05-Redis-Server)
+
 ### Running Application with Docker
-> [Module 5 Deployment with Docker](05-Docker-and-Docker-compose)
+> [Module 6 Deployment with Docker](05-Docker-and-Docker-compose)
 
 ### Deploy Application to Kubernetes Cluster
 #### Create a Kubernetes Service
-> [Module 6 Kubernetes Service](06-Kubernetes-Service)
+> [Module 7 Kubernetes Service](06-Kubernetes-Service)
 
 #### Managing traffic with Kubernetes Ingress
-> [Module 7 Kubernetes Ingress](07-Kubernetes-Ingress)
-
-#### Managing storage
-> [Module 8 Kubernetes Storage](08-Kubernetes-Storage)
+> [Module 8 Kubernetes Ingress](07-Kubernetes-Ingress)
