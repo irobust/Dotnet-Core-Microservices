@@ -7,14 +7,20 @@ docker run -p 6379:6379 --rm redis redis-server
 
 Run Redis CLI
 ```
-docker run -it --rm redis redis-cli -h host.docker.internal:6379
+docker run -it --rm redis redis-cli -h host.docker.internal
 ```
 ### Working with String
 ```
 set [Key] [Value]
 get [key]
+del [key]
+keys *
+keys c*
+rename [key] [newkey]
+renamex [key] [newkey] # check duplicate key
 incr [key]
 incrby [key]
+incrbyfloat [key] [value]
 decr [key]
 decrby [key]
 mset [key] [value] [key] [value] ...
@@ -70,4 +76,15 @@ zrevrange [key] [start] [stop]
 zrevrange [key] [start] [stop] [score]
 zrevrangebyscore [key] [start] [stop]
 zrank [key] [member]
+```
+
+### Publish and Subscribe
+Start subscriber instance
+```
+docker run -it --rm redis redis-cli -h host.docker.internal
+```
+
+```
+publish [chanel] [message]
+subscribe [chanel]
 ```

@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  kong-database:
+    image: postgres
+    container_name: kong-postgres
+    restart: on-failure
+    volumes:
+      - kong_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+      POSTGRES_DB: kong
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  kong:
+    build:
+      context: .
+      dockerfile: kong.Dockerfile
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+      KONG_PROXY_LISTEN: 0.0.0.0:8000, 0.0.0.0:8443 ssl
+      KONG_PROXY_LISTEN_SSL: 0.0.0.0:8443
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    depends_on:
+      - kong-database
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8443:8443
+      - 8444:8444
+  kong-ui:
+    image: pantsel/konga:latest
+    ports:
+      - 1337:1337
+  
+  product-service:
+    build:
+      context: .
+      dockerfile: product.Dockerfile
+    ports:
+      - 3000:3000
+    tty: true
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order.Dockerfile
+    ports:
+      - 8087:8087
+
+volumes:
+  kong_data: {}
