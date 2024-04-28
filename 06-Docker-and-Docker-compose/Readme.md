@@ -3,8 +3,6 @@
 1. Create new project
 ```
 dotnet new webapi -o Weather.Api
-dotnet add package Serilog.Sinks.Console
-dotnet add package Serilog.Sinks.Seq
 ```
 2. Create launch.json and task.json
 * Click debugging tab and click `create a launch.json file`
@@ -33,42 +31,35 @@ dotnet add package Serilog.Sinks.Seq
 ```
 dotnet add package Serilog.AspNetCore  
 ```
-2. Update main function
+2. Update Program.cs
 ```
-public static int Main(string[] args)
-        {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+using Serilog;
 
-            try
-            {
-                Log.Information("Starting web host");
-                CreateHostBuilder(args).Build().Run();
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Host terminated unexpectedly");
-                return 1;
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
-        }
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Seq(serverUrl: "http://host.docker.internal:8005")
+    .CreateLogger();
+
+try{
+    var builder = WebApplication.CreateBuilder(args);
+    ....
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 ```
 3. Add useSeriLog() on CreateHostBuilder function
 ```
-public static IHostBuilder CreateHostBuilder(string[] args) =>
-    Host.CreateDefaultBuilder(args)
-        .UseSerilog()
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseStartup<Startup>();
-        });
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSerilog(); // <- Add this line
+...
+app.Run();
 ```
 
 4. Add sample logging
@@ -79,8 +70,11 @@ _logging.LogInformation("Generate random weather");
 5. See Log information in Debug Console
 
 6. Add sink for SeriLog (seq)
+```
+dotnet add package Serilog.Sinks.Seq
+```
 
-7. Start Seq with docker
+8. Start Seq with docker
 ```
 docker pull datalust/seq:latest
 docker run --name seq -e ACCEPT_EULA=Y -p 5341:80 datalust/seq:latest
@@ -88,7 +82,10 @@ docker run --name seq -e ACCEPT_EULA=Y -p 5341:80 datalust/seq:latest
 
 8. Add write to seq on Logger configuration
 ```
-.WriteTo.Seq(serverUrl: "http://host.docker.internal:5341")
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Seq(serverUrl: "http://host.docker.internal:5341")
+    .CreateLogger();
 ```
 
 9. Check logging at [http://localhost:5341](http://localhost:5341)
